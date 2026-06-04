@@ -13,6 +13,7 @@ import BusinessDetail from "@/pages/business-detail";
 import SearchPage from "@/pages/search";
 import AdminDashboard from "@/pages/admin/index";
 import AdminBusinesses from "@/pages/admin/businesses";
+import AddBusiness from "@/pages/add-business";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ function Router() {
         <Route path="/search" component={SearchPage} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/businesses" component={AdminBusinesses} />
+        <Route path="/add-business" component={AddBusiness} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

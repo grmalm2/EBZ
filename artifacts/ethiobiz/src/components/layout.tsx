@@ -27,6 +27,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/businesses" className="hover:text-foreground transition-colors">
                 {t('businesses')}
               </Link>
+              <Link href="/add-business" className="hover:text-foreground transition-colors">
+                Submit Business
+              </Link>
             </nav>
 
             <DropdownMenu>
