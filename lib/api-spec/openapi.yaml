@@ -1,22 +1,34 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: EthioBiz API - Multilingual Business Discovery Platform
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: businesses
+    description: Business directory operations
+  - name: categories
+    description: Category management
+  - name: ads
+    description: Advertisement management
+  - name: users
+    description: User management
+  - name: search
+    description: Search operations
+  - name: dashboard
+    description: Admin dashboard operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +36,506 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      responses:
+        "200":
+          description: Logged out
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories with subcategories
+      responses:
+        "200":
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create a category (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+  /categories/{id}:
+    get:
+      operationId: getCategory
+      tags: [categories]
+      summary: Get a single category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCategory
+      tags: [categories]
+      summary: Update a category (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      summary: Delete a category (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /businesses:
+    get:
+      operationId: listBusinesses
+      tags: [businesses]
+      summary: List and search businesses
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: subcity
+          in: query
+          schema:
+            type: string
+        - name: verified
+          in: query
+          schema:
+            type: boolean
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Business list with pagination
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessPage"
+    post:
+      operationId: createBusiness
+      tags: [businesses]
+      summary: Create a new business listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+
+  /businesses/featured:
+    get:
+      operationId: getFeaturedBusinesses
+      tags: [businesses]
+      summary: Get featured businesses for homepage
+      responses:
+        "200":
+          description: Featured businesses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
+
+  /businesses/recent:
+    get:
+      operationId: getRecentBusinesses
+      tags: [businesses]
+      summary: Get recently added businesses
+      responses:
+        "200":
+          description: Recent businesses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
+
+  /businesses/stats:
+    get:
+      operationId: getBusinessStats
+      tags: [businesses]
+      summary: Get business stats by category (wow endpoint)
+      responses:
+        "200":
+          description: Stats per category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryStat"
+
+  /businesses/{id}:
+    get:
+      operationId: getBusiness
+      tags: [businesses]
+      summary: Get a single business profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Business
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBusiness
+      tags: [businesses]
+      summary: Update a business listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+    delete:
+      operationId: deleteBusiness
+      tags: [businesses]
+      summary: Delete a business (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /businesses/{id}/verify:
+    post:
+      operationId: verifyBusiness
+      tags: [businesses]
+      summary: Verify a business (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Business verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+
+  /businesses/{id}/claim:
+    post:
+      operationId: claimBusiness
+      tags: [businesses]
+      summary: Claim a business listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimInput"
+      responses:
+        "201":
+          description: Claim submitted
+
+  /ads:
+    get:
+      operationId: listAds
+      tags: [ads]
+      summary: List all ads (admin)
+      responses:
+        "200":
+          description: Ad list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ad"
+    post:
+      operationId: createAd
+      tags: [ads]
+      summary: Create an advertisement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ad"
+
+  /ads/active:
+    get:
+      operationId: getActiveAds
+      tags: [ads]
+      summary: Get active ads for homepage banners
+      responses:
+        "200":
+          description: Active ads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ad"
+
+  /ads/{id}:
+    patch:
+      operationId: updateAd
+      tags: [ads]
+      summary: Update an ad (admin - approve/schedule)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ad"
+    delete:
+      operationId: deleteAd
+      tags: [ads]
+      summary: Delete an ad
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (admin)
+      responses:
+        "200":
+          description: User list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update a user (admin - suspend/role)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get admin dashboard overview stats
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /search:
+    get:
+      operationId: globalSearch
+      tags: [search]
+      summary: Global search across businesses
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: subcity
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessPage"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +546,463 @@ components:
       required:
         - status
 
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [user, admin]
+        suspended:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - role
+        - suspended
+        - createdAt
+
+    UserUpdate:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, admin]
+        suspended:
+          type: boolean
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        nameEn:
+          type: string
+        nameAm:
+          type: string
+        nameOrm:
+          type: string
+        icon:
+          type: ["string", "null"]
+        parentId:
+          type: ["integer", "null"]
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        businessCount:
+          type: integer
+      required:
+        - id
+        - slug
+        - nameEn
+        - nameAm
+        - nameOrm
+        - businessCount
+
+    CategoryInput:
+      type: object
+      properties:
+        slug:
+          type: string
+        nameEn:
+          type: string
+        nameAm:
+          type: string
+        nameOrm:
+          type: string
+        icon:
+          type: string
+        parentId:
+          type: ["integer", "null"]
+      required:
+        - slug
+        - nameEn
+        - nameAm
+        - nameOrm
+
+    CategoryUpdate:
+      type: object
+      properties:
+        nameEn:
+          type: string
+        nameAm:
+          type: string
+        nameOrm:
+          type: string
+        icon:
+          type: string
+
+    CategoryStat:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        nameEn:
+          type: string
+        nameAm:
+          type: string
+        nameOrm:
+          type: string
+        icon:
+          type: ["string", "null"]
+        count:
+          type: integer
+        verifiedCount:
+          type: integer
+      required:
+        - categoryId
+        - nameEn
+        - nameAm
+        - nameOrm
+        - count
+        - verifiedCount
+
+    Business:
+      type: object
+      properties:
+        id:
+          type: integer
+        nameEn:
+          type: string
+        nameAm:
+          type: ["string", "null"]
+        nameOrm:
+          type: ["string", "null"]
+        descriptionEn:
+          type: ["string", "null"]
+        descriptionAm:
+          type: ["string", "null"]
+        descriptionOrm:
+          type: ["string", "null"]
+        categoryId:
+          type: integer
+        categoryNameEn:
+          type: ["string", "null"]
+        categoryNameAm:
+          type: ["string", "null"]
+        categoryNameOrm:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        subcity:
+          type: ["string", "null"]
+        address:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        logoUrl:
+          type: ["string", "null"]
+        gallery:
+          type: array
+          items:
+            type: string
+        services:
+          type: array
+          items:
+            type: string
+        products:
+          type: array
+          items:
+            type: string
+        socialLinks:
+          $ref: "#/components/schemas/SocialLinks"
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        verified:
+          type: boolean
+        featured:
+          type: boolean
+        claimStatus:
+          type: ["string", "null"]
+          enum: [pending, approved, rejected, null]
+        ownerId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - nameEn
+        - categoryId
+        - verified
+        - featured
+        - gallery
+        - services
+        - products
+        - createdAt
+        - updatedAt
+
+    SocialLinks:
+      type: object
+      properties:
+        facebook:
+          type: ["string", "null"]
+        instagram:
+          type: ["string", "null"]
+        twitter:
+          type: ["string", "null"]
+        linkedin:
+          type: ["string", "null"]
+        youtube:
+          type: ["string", "null"]
+        telegram:
+          type: ["string", "null"]
+
+    BusinessInput:
+      type: object
+      properties:
+        nameEn:
+          type: string
+        nameAm:
+          type: string
+        nameOrm:
+          type: string
+        descriptionEn:
+          type: string
+        descriptionAm:
+          type: string
+        descriptionOrm:
+          type: string
+        categoryId:
+          type: integer
+        city:
+          type: string
+        subcity:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        website:
+          type: string
+        logoUrl:
+          type: string
+        gallery:
+          type: array
+          items:
+            type: string
+        services:
+          type: array
+          items:
+            type: string
+        products:
+          type: array
+          items:
+            type: string
+        socialLinks:
+          $ref: "#/components/schemas/SocialLinks"
+        latitude:
+          type: number
+        longitude:
+          type: number
+      required:
+        - nameEn
+        - categoryId
+
+    BusinessUpdate:
+      type: object
+      properties:
+        nameEn:
+          type: string
+        nameAm:
+          type: string
+        nameOrm:
+          type: string
+        descriptionEn:
+          type: string
+        descriptionAm:
+          type: string
+        descriptionOrm:
+          type: string
+        categoryId:
+          type: integer
+        city:
+          type: string
+        subcity:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        website:
+          type: string
+        logoUrl:
+          type: string
+        gallery:
+          type: array
+          items:
+            type: string
+        services:
+          type: array
+          items:
+            type: string
+        products:
+          type: array
+          items:
+            type: string
+        socialLinks:
+          $ref: "#/components/schemas/SocialLinks"
+        latitude:
+          type: number
+        longitude:
+          type: number
+        featured:
+          type: boolean
+
+    BusinessPage:
+      type: object
+      properties:
+        businesses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Business"
+        total:
+          type: integer
+        page:
+          type: integer
+        totalPages:
+          type: integer
+      required:
+        - businesses
+        - total
+        - page
+        - totalPages
+
+    ClaimInput:
+      type: object
+      properties:
+        tradeLicenseUrl:
+          type: string
+        contactName:
+          type: string
+        contactPhone:
+          type: string
+        notes:
+          type: string
+      required:
+        - contactName
+        - contactPhone
+
+    Ad:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        linkUrl:
+          type: ["string", "null"]
+        type:
+          type: string
+          enum: [banner, featured, category_sponsor]
+        status:
+          type: string
+          enum: [pending, active, paused, expired]
+        businessId:
+          type: ["integer", "null"]
+        startsAt:
+          type: ["string", "null"]
+        endsAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - title
+        - type
+        - status
+        - createdAt
+
+    AdInput:
+      type: object
+      properties:
+        title:
+          type: string
+        imageUrl:
+          type: string
+        linkUrl:
+          type: string
+        type:
+          type: string
+          enum: [banner, featured, category_sponsor]
+        businessId:
+          type: integer
+        startsAt:
+          type: string
+        endsAt:
+          type: string
+      required:
+        - title
+        - type
+
+    AdUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        imageUrl:
+          type: string
+        linkUrl:
+          type: string
+        status:
+          type: string
+          enum: [pending, active, paused, expired]
+        startsAt:
+          type: string
+        endsAt:
+          type: string
+
+    DashboardStats:
+      type: object
+      properties:
+        totalBusinesses:
+          type: integer
+        verifiedBusinesses:
+          type: integer
+        pendingClaims:
+          type: integer
+        totalUsers:
+          type: integer
+        totalAds:
+          type: integer
+        activeAds:
+          type: integer
+        recentBusinesses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Business"
+        topCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryStat"
+      required:
+        - totalBusinesses
+        - verifiedBusinesses
+        - pendingClaims
+        - totalUsers
+        - totalAds
+        - activeAds
+        - recentBusinesses
+        - topCategories

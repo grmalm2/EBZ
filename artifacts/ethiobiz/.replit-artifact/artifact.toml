@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "EthioBiz"
+version = "1.0.0"
+id = "artifacts/ethiobiz"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18574
+
+[services.development]
+run = "pnpm --filter @workspace/ethiobiz run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ethiobiz", "run", "build" ]
+publicDir = "artifacts/ethiobiz/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18574"
+BASE_PATH = "/"

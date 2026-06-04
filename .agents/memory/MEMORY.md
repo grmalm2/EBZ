@@ -1,0 +1,2 @@
+- [Drizzle inArray pattern](drizzle-inarray.md) — never use sql.join for array WHERE clauses with node-postgres; always use inArray() from drizzle-orm
+- [EthioBiz i18n pattern](ethiobiz-i18n.md) — getLocalizedField() helper picks EN/AM/ORM field; generated hook naming differs from intuition

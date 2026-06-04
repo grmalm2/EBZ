@@ -1,0 +1,131 @@
+I want to build a top notch multilingual business discovery platform something like addisbiz.com but much more, marketplace, and advertising ecosystem in ethiopia. The languages are English Amharic and afaan oromoo. We can call the business ethioobiz. Please use the below details.
+Main Homepage Design
+Instead of a boring directory homepage, create a modern portal.
+Hero Section
+Large search bar:
+Search businesses, jobs, properties, clinics...
+Search filters:
+•	Category 
+•	City 
+•	Subcity
+
+Featured Categories
+Large cards:
+Real Estate
+•	Houses for rent 
+•	Houses for sales 
+•	Apartments 
+•	Commercial Buildings 
+•	Land 
+Jobs
+•	Employers 
+•	Job Listings 
+•	 
+Cars
+•	New Cars 
+•	Used Cars 
+•	Dealers 
+Import & Export
+•	Exporters 
+•	Importers 
+•	Manufacturers 
+Brokers
+•	House workers Brokers 
+•	car Brokers 
+•	Real Estate Brokers 
+•	Other brokers
+Clinics
+•	Hospitals 
+•	Clinics 
+•	Pharmacies 
+•	 
+Miscellaneous
+•	Hotels 
+•	Restaurants 
+•	Schools 
+•	NGOs 
+•	Construction
+
+
+Business Listing Features
+Each business gets:
+Profile Page
+•	Logo 
+•	Gallery 
+•	Description 
+•	Services 
+•	Products 
+•	Phone 
+•	Email 
+•	Website 
+•	Social Links 
+•	Map
+
+Verification System
+Businesses can claim listings.
+Workflow:
+Business registers
+      ↓
+Uploads trade license
+      ↓
+Admin reviews
+      ↓
+Verified badge issued
+Verified badge:
+✓ Verified Business
+
+
+Advertising System
+Businesses can pay for:
+Featured Listing
+Appears at top.
+Homepage Banner
+Rotating advertisements.
+Category Sponsorship
+
+Admin Dashboard
+Admins can:
+Business Management
+•	Add business 
+•	Edit business 
+•	Delete business 
+•	Verify business 
+Category Management
+•	Create categories 
+•	Manage translations 
+Advertisement Management
+•	Approve ads 
+•	Schedule ads 
+User Management
+•	Suspend users 
+•	Assign roles
+
+
+Revenue Model
+You can monetize through:
+Free Listings
+Basic profile
+Premium Listings
+Featured placement
+Banner Ads
+Homepage ads
+Job Posts
+Paid vacancies
+Property Listings
+Paid property promotion
+Car Listings
+Dealer subscriptions
+
+For a project of this scale, I'd start with a Next.js + TypeScript + Tailwind + Prisma + Supabase architecture and design the database for multilingual content from day one.
+Phase 1 (MVP)
+•	Authentication 
+•	Business directory 
+•	Categories 
+•	Search 
+•	Multilingual support 
+•	Admin dashboard 
+Phase 2
+•	Jobs 
+•	Real estate 
+•	Cars 
+•	Import/export 

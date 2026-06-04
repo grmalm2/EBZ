@@ -1,5 +1,6 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -25,9 +26,21 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
+app.use(cookieParser(process.env.SESSION_SECRET ?? "ethiobiz-secret"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Simple signed-cookie session middleware
+app.use((req: any, _res, next) => {
+  const raw = (req as any).signedCookies?.session;
+  try {
+    req.session = raw ? JSON.parse(raw) : {};
+  } catch {
+    req.session = {};
+  }
+  next();
+});
 
 app.use("/api", router);
 
