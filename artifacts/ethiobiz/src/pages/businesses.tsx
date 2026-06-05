@@ -22,11 +22,11 @@ export default function Businesses() {
   const { data: categoriesData } = useListCategories();
   const { data, isLoading } = useListBusinesses({
     q: q || undefined,
-    categoryId: categoryId || undefined,
+    categoryId: (categoryId ? parseInt(categoryId, 10) : undefined) as any,
     city: city || undefined,
-    page: String(page),
-    limit: "12",
-  });
+    page: page as any,
+    limit: 12 as any,
+  } as any);
 
   const businesses = data?.businesses ?? [];
   const totalPages = data?.totalPages ?? 1;

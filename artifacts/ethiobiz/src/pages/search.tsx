@@ -26,10 +26,10 @@ export default function SearchPage() {
   const { data: categoriesData } = useListCategories();
   const { data, isLoading } = useGlobalSearch({
     q: q || undefined,
-    categoryId: categoryId || undefined,
-    page: String(page),
-    limit: "20",
-  });
+    categoryId: (categoryId ? parseInt(categoryId, 10) : undefined) as any,
+    page: page as any,
+    limit: 20 as any,
+  } as any);
 
   useEffect(() => {
     const newParams = new URLSearchParams();

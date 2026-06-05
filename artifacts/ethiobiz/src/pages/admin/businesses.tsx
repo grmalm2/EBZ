@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useListBusinesses, useVerifyBusiness, useDeleteBusiness } from "@workspace/api-client-react";
-import { Building2, CheckCircle2, Trash2, Eye, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { Building2, CheckCircle2, Trash2, Eye, ArrowLeft, ChevronLeft, ChevronRight, Filter, Clock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,8 +13,14 @@ export default function AdminBusinesses() {
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [filter, setFilter] = useState<"all" | "pending" | "verified">("all");
 
-  const { data, isLoading, refetch } = useListBusinesses({ q: q || undefined, page: String(page), limit: "20" });
+  const { data, isLoading, refetch } = useListBusinesses({
+    q: q || undefined,
+    verified: (filter === "verified" ? true : filter === "pending" ? false : undefined) as any,
+    page: page as any,
+    limit: 20 as any,
+  } as any);
   const { mutate: verify } = useVerifyBusiness();
   const { mutate: deleteBiz } = useDeleteBusiness();
 
@@ -54,6 +60,32 @@ export default function AdminBusinesses() {
               />
               <Button type="submit" variant="outline">Search</Button>
             </form>
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <Button
+              variant={filter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilter("all"); setPage(1); }}
+              className="gap-1"
+            >
+              <Filter className="w-3.5 h-3.5" /> All
+            </Button>
+            <Button
+              variant={filter === "pending" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilter("pending"); setPage(1); }}
+              className="gap-1"
+            >
+              <Clock className="w-3.5 h-3.5" /> Pending
+            </Button>
+            <Button
+              variant={filter === "verified" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilter("verified"); setPage(1); }}
+              className="gap-1"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" /> Verified
+            </Button>
           </div>
         </div>
       </div>

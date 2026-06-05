@@ -7,30 +7,26 @@ const router: IRouter = Router();
 router.get("/search", async (req, res): Promise<void> => {
   const { q, categoryId, city, subcity, page = "1", limit = "20" } = req.query as Record<string, string>;
 
-  if (!q) {
-    res.status(400).json({ error: "q is required" });
-    return;
-  }
-
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
   const limitNum = Math.min(100, parseInt(limit, 10) || 20);
   const offset = (pageNum - 1) * limitNum;
 
-  const searchClause = sql`(
-    ${businessesTable.nameEn} ILIKE ${'%' + q + '%'}
-    OR ${businessesTable.nameAm} ILIKE ${'%' + q + '%'}
-    OR ${businessesTable.nameOrm} ILIKE ${'%' + q + '%'}
-    OR ${businessesTable.descriptionEn} ILIKE ${'%' + q + '%'}
-    OR ${businessesTable.city} ILIKE ${'%' + q + '%'}
-    OR ${businessesTable.address} ILIKE ${'%' + q + '%'}
-  )`;
-
-  const conditions: any[] = [searchClause];
+  const conditions: any[] = [];
+  if (q) {
+    conditions.push(sql`(
+      ${businessesTable.nameEn} ILIKE ${'%' + q + '%'}
+      OR ${businessesTable.nameAm} ILIKE ${'%' + q + '%'}
+      OR ${businessesTable.nameOrm} ILIKE ${'%' + q + '%'}
+      OR ${businessesTable.descriptionEn} ILIKE ${'%' + q + '%'}
+      OR ${businessesTable.city} ILIKE ${'%' + q + '%'}
+      OR ${businessesTable.address} ILIKE ${'%' + q + '%'}
+    )`);
+  }
   if (categoryId) conditions.push(eq(businessesTable.categoryId, parseInt(categoryId, 10)));
   if (city) conditions.push(ilike(businessesTable.city, `%${city}%`));
   if (subcity) conditions.push(ilike(businessesTable.subcity, `%${subcity}%`));
 
-  const whereClause = and(...conditions);
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   const [{ total }] = await db.select({ total: count() }).from(businessesTable).where(whereClause);
 
