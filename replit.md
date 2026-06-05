@@ -1,4 +1,4 @@
-# EthioOBiz
+# EthiooBiz
 
 Multilingual business discovery platform for Ethiopia — search, browse, and connect with Ethiopian businesses in English, Amharic (አማርኛ), and Afaan Oromoo.
 

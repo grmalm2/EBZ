@@ -131,7 +131,7 @@ export default function AddBusiness() {
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </button>
           <h1 className="text-3xl font-serif font-bold">Add Your Business</h1>
-          <p className="text-muted-foreground">List your business on EthioOBiz and get discovered by customers across Ethiopia</p>
+          <p className="text-muted-foreground">List your business on EthiooBiz and get discovered by customers across Ethiopia</p>
         </div>
       </div>
 
