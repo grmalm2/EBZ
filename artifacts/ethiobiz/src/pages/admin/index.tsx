@@ -47,7 +47,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-serif font-bold">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Manage EthioBiz listings and activity</p>
+              <p className="text-muted-foreground">Manage EthioOBiz listings and activity</p>
             </div>
             <Link href="/admin/businesses">
               <Button className="gap-2">

@@ -1,4 +1,4 @@
-# EthioBiz
+# EthioOBiz
 
 Multilingual business discovery platform for Ethiopia — search, browse, and connect with Ethiopian businesses in English, Amharic (አማርኛ), and Afaan Oromoo.
 
@@ -50,7 +50,7 @@ Multilingual business discovery platform for Ethiopia — search, browse, and co
 
 ## Seed data
 
-- Admin user: `admin@ethiobiz.et` / `admin_001`
+- Admin user: `admin@ethioobiz.et` / `admin_001`
 - 7 top-level categories (Real Estate, Jobs, Cars, Import & Export, Brokers, Clinics, Miscellaneous), 24 subcategories
 - 10 sample businesses across categories
 - 3 sample ads

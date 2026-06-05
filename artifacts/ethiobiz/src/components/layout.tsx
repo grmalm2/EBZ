@@ -18,7 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               E
             </div>
             <span className="font-serif font-bold text-xl tracking-tight text-foreground hidden sm:inline-block">
-              EthioBiz
+              EthioOBiz
             </span>
           </Link>
 
@@ -82,7 +82,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <div className="bg-primary text-primary-foreground w-6 h-6 rounded flex items-center justify-center font-serif font-bold">
                   E
                 </div>
-                <span className="font-serif font-bold text-lg">EthioBiz</span>
+                <span className="font-serif font-bold text-lg">EthioOBiz</span>
               </div>
               <p className="text-muted-foreground text-sm max-w-sm mb-4 leading-relaxed">
                 The digital town square of a thriving, modern Ethiopia. Find businesses, services, and opportunities in English, Amharic, and Afaan Oromoo.
@@ -97,7 +97,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="border-t pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} EthioBiz. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} EthioOBiz. All rights reserved.</p>
             <div className="flex items-center gap-1">
               <MapPin className="w-3 h-3" />
               <span>Addis Ababa, Ethiopia</span>

@@ -40,7 +40,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
-  // Demo: allow login with admin@ethiobiz.et / admin
+  // Demo: allow login with admin@ethioobiz.et / admin
   let user = await db.select().from(usersTable).where(eq(usersTable.email, email)).then(r => r[0]);
 
   if (!user) {
@@ -49,7 +49,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
       id: `user_${Date.now()}`,
       email,
       username: email.split("@")[0],
-      role: email === "admin@ethiobiz.et" ? "admin" : "user",
+      role: email === "admin@ethioobiz.et" ? "admin" : "user",
       suspended: false,
     }).returning();
     user = created;

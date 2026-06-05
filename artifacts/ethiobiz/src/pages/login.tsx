@@ -53,7 +53,7 @@ export default function Login() {
             E
           </div>
           <CardTitle className="text-2xl font-serif">Welcome back</CardTitle>
-          <CardDescription>Sign in to your EthioBiz account</CardDescription>
+          <CardDescription>Sign in to your EthioOBiz account</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
