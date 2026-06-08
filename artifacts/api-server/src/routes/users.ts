@@ -1,37 +1,53 @@
 import { Router, type IRouter } from "express";
-import { db, usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { supabaseAdmin } from "@workspace/db/supabase";
 
 const router: IRouter = Router();
 
 function formatUser(u: any) {
   return {
     id: u.id,
-    username: u.username,
+    username: u.email?.split("@")[0] || "user",
     email: u.email,
-    role: u.role,
-    suspended: u.suspended,
-    createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : u.createdAt,
+    role: u.email?.toLowerCase() === "admin@ethioobiz.et" ? "admin" : "user",
+    suspended: false,
+    createdAt: u.created_at,
   };
 }
 
 router.get("/users", async (_req, res): Promise<void> => {
-  const users = await db.select().from(usersTable).orderBy(usersTable.createdAt);
-  res.json(users.map(formatUser));
+  const { data, error } = await supabaseAdmin.auth.admin.listUsers();
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  res.json((data.users || []).map(formatUser));
 });
 
 router.patch("/users/:id", async (req, res): Promise<void> => {
   const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-
-  const updates: Record<string, unknown> = {};
   const { role, suspended } = req.body;
-  if (role !== undefined) updates.role = role;
-  if (suspended !== undefined) updates.suspended = suspended;
 
-  const [user] = await db.update(usersTable).set(updates).where(eq(usersTable.id, id)).returning();
-  if (!user) { res.status(404).json({ error: "User not found" }); return; }
+  const updates: any = {};
+  if (role !== undefined) {
+    // Store role metadata in Supabase auth user
+    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(id, {
+      user_metadata: { role },
+    });
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+    res.json(formatUser(data.user));
+    return;
+  }
 
-  res.json(formatUser(user));
+  // Just return existing user
+  const { data: existing } = await supabaseAdmin.auth.admin.getUserById(id);
+  if (!existing?.user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+  res.json(formatUser(existing.user));
 });
 
 export default router;

@@ -2,12 +2,21 @@ import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { useGetMe } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { MapPin, Globe } from "lucide-react";
+import { MapPin, Globe, LogOut } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { supabaseClient } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { language, setLanguage, t } = useI18n();
   const { data: user } = useGetMe();
+  const queryClient = useQueryClient();
+
+  const handleLogout = async () => {
+    await supabaseClient.auth.signOut();
+    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    window.location.href = "/";
+  };
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
@@ -58,6 +67,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <div className="w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold text-sm">
                   {user.username?.charAt(0).toUpperCase() || 'U'}
                 </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleLogout} title="Sign out">
+                  <LogOut className="w-4 h-4" />
+                </Button>
               </div>
             ) : (
               <Link href="/login">

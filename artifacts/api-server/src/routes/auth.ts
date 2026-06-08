@@ -1,73 +1,71 @@
 import { Router, type IRouter } from "express";
-import { db, usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { supabaseAdmin, getUserFromToken } from "@workspace/db/supabase";
+import { db } from "@workspace/db";
 
 const router: IRouter = Router();
 
-// Simple session-based auth using a user ID cookie
-// In production this would integrate with a real auth provider
+function isAdmin(user: any): boolean {
+  return user?.email?.toLowerCase() === "admin@ethioobiz.et";
+}
+
+function formatUser(user: any): any {
+  if (!user) return null;
+  return {
+    id: user.id,
+    username: user.email?.split("@")[0] || "user",
+    email: user.email,
+    role: isAdmin(user) ? "admin" : "user",
+    suspended: false,
+    createdAt: user.created_at || new Date().toISOString(),
+  };
+}
 
 router.get("/auth/me", async (req, res): Promise<void> => {
-  const userId = (req as any).session?.userId;
-  if (!userId) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+
+  if (!token) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+
+  const user = await getUserFromToken(token);
   if (!user) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  res.json({
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-    suspended: user.suspended,
-    createdAt: user.createdAt.toISOString(),
-  });
+
+  res.json(formatUser(user));
 });
 
-router.post("/auth/logout", async (req, res): Promise<void> => {
-  (req as any).session = null;
+router.post("/auth/logout", async (_req, res): Promise<void> => {
   res.json({ success: true });
 });
 
 router.post("/auth/login", async (req, res): Promise<void> => {
   const { email, password } = req.body;
-  if (!email) {
-    res.status(400).json({ error: "Email required" });
+  if (!email || !password) {
+    res.status(400).json({ error: "Email and password required" });
     return;
   }
 
-  // Demo: allow login with admin@ethioobiz.et / admin
-  let user = await db.select().from(usersTable).where(eq(usersTable.email, email)).then(r => r[0]);
+  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-  if (!user) {
-    // Create user on first login (demo mode)
-    const [created] = await db.insert(usersTable).values({
-      id: `user_${Date.now()}`,
-      email,
-      username: email.split("@")[0],
-      role: email === "admin@ethioobiz.et" ? "admin" : "user",
-      suspended: false,
-    }).returning();
-    user = created;
-  }
-
-  if (user.suspended) {
-    res.status(403).json({ error: "Account suspended" });
+  if (error || !data.user) {
+    res.status(401).json({ error: error?.message || "Invalid credentials" });
     return;
   }
 
-  (req as any).session = { userId: user.id };
   res.json({
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-    suspended: user.suspended,
-    createdAt: user.createdAt.toISOString(),
+    user: formatUser(data.user),
+    session: {
+      accessToken: data.session?.access_token,
+      refreshToken: data.session?.refresh_token,
+      expiresAt: data.session?.expires_at,
+    },
   });
 });
 
