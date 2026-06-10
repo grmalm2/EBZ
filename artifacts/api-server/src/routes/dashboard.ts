@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
-import { db, businessesTable, adsTable, claimsTable, categoriesTable, usersTable } from "@workspace/db";
+import { db, businessesTable, adsTable, claimsTable, categoriesTable } from "@workspace/db";
+import { supabaseAdmin } from "@workspace/db/supabase";
 import { eq, count, desc, inArray } from "drizzle-orm";
 
 const router: IRouter = Router();
@@ -14,7 +15,8 @@ router.get("/dashboard/stats", async (_req, res): Promise<void> => {
     .select({ total: count() })
     .from(claimsTable)
     .where(eq(claimsTable.status, "pending"));
-  const [{ total: totalUsers }] = await db.select({ total: count() }).from(usersTable);
+  const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
+  const totalUsers = usersData?.users?.length ?? 0;
   const [{ total: totalAds }] = await db.select({ total: count() }).from(adsTable);
   const [{ total: activeAds }] = await db
     .select({ total: count() })
