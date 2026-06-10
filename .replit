@@ -41,3 +41,5 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.shared]
+VITE_SUPABASE_URL = "https://ybpyvctipbmwybfuhedu.supabase.co"
+VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlicHl2Y3RpcGJtd3liZnVoZWR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5Mjk0NDIsImV4cCI6MjA5NjUwNTQ0Mn0.8nxbCIlmkLuRTvykGiTVyz132ZOdFGR5gM3rbhXY80E"
