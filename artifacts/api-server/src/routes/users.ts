@@ -1,53 +1,39 @@
 import { Router, type IRouter } from "express";
-import { supabaseAdmin } from "@workspace/db/supabase";
+import { db, usersTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 const router: IRouter = Router();
 
-function formatUser(u: any) {
-  return {
-    id: u.id,
-    username: u.email?.split("@")[0] || "user",
-    email: u.email,
-    role: u.email?.toLowerCase() === "admin@ethioobiz.et" ? "admin" : "user",
-    suspended: false,
-    createdAt: u.created_at,
-  };
-}
-
 router.get("/users", async (_req, res): Promise<void> => {
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers();
-  if (error) {
-    res.status(500).json({ error: error.message });
-    return;
-  }
-  res.json((data.users || []).map(formatUser));
+  const users = await db.select().from(usersTable);
+  res.json(users);
 });
 
 router.patch("/users/:id", async (req, res): Promise<void> => {
   const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { role, suspended } = req.body;
+  const { role, suspended } = req.body as { role?: string; suspended?: boolean };
 
-  const updates: any = {};
-  if (role !== undefined) {
-    // Store role metadata in Supabase auth user
-    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(id, {
-      user_metadata: { role },
-    });
-    if (error) {
-      res.status(400).json({ error: error.message });
-      return;
-    }
-    res.json(formatUser(data.user));
+  const updates: Partial<{ role: string; suspended: boolean }> = {};
+  if (role !== undefined) updates.role = role;
+  if (suspended !== undefined) updates.suspended = suspended;
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: "No valid fields to update" });
     return;
   }
 
-  // Just return existing user
-  const { data: existing } = await supabaseAdmin.auth.admin.getUserById(id);
-  if (!existing?.user) {
+  const [updated] = await db
+    .update(usersTable)
+    .set(updates)
+    .where(eq(usersTable.id, id))
+    .returning();
+
+  if (!updated) {
     res.status(404).json({ error: "User not found" });
     return;
   }
-  res.json(formatUser(existing.user));
+
+  res.json(updated);
 });
 
 export default router;
