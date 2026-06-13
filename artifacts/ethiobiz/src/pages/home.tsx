@@ -1,7 +1,7 @@
 import { useI18n } from "@/lib/i18n";
 import { useGlobalSearch, useGetFeaturedBusinesses, useGetRecentBusinesses, useGetActiveAds } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
-import { Search, Building2, Briefcase, Car, Globe, Handshake, Heart, Grid3x3, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Search, Building2, Briefcase, Car, Globe, Handshake, Heart, Grid3x3, ArrowRight, CheckCircle2, Home as HomeIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -15,6 +15,7 @@ const featuredCategories = [
   { id: 5, name: "Brokers", icon: Handshake, color: "bg-orange-100 text-orange-700" },
   { id: 6, name: "Clinics", icon: Heart, color: "bg-red-100 text-red-700" },
   { id: 7, name: "Miscellaneous", icon: Grid3x3, color: "bg-gray-100 text-gray-700" },
+  { id: 32, name: "House Rentals", icon: HomeIcon, color: "bg-teal-100 text-teal-700" },
 ];
 
 export default function Home() {
