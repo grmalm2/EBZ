@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @workspace/ethiobiz run build",
+  "buildCommand": "pnpm run typecheck:libs && pnpm --filter @workspace/ethiobiz run build",
   "installCommand": "pnpm install",
   "framework": "vite",
   "rewrites": [
