@@ -1,2 +1,5 @@
 *.zip
 .vercel
+dist
+artifacts/*/dist
+node_modules
