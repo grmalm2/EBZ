@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm -w run typecheck:libs && pnpm --filter @workspace/ethiobiz run build && cp -r artifacts/ethiobiz/dist .",
+  "buildCommand": "pnpm -w run typecheck:libs && pnpm --filter @workspace/ethiobiz run build && ls -la && ls -la artifacts/ethiobiz",
   "installCommand": "pnpm install",
   "framework": "vite",
   "rewrites": [
