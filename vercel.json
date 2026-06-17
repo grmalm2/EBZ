@@ -1,7 +1,7 @@
 {
   "buildCommand": "pnpm -w run typecheck:libs && pnpm --filter @workspace/ethiobiz run build",
   "installCommand": "pnpm install",
-  "framework": "vite",
+  "outputDirectory": "artifacts/ethiobiz/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.ts" }
   ]
