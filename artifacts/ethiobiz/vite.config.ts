@@ -2,29 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT || "3000";
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
+// 1. Fallback safely if PORT or BASE_PATH aren't provided (Fixes Vercel crashes)
+const port = Number(process.env.PORT || "3000");
 const basePath = process.env.BASE_PATH || "/";
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
 
 export default defineConfig({
   base: basePath,
@@ -32,10 +13,12 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+    // 2. Only load Replit plugins if we are actively developing inside Replit
+    ...(process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined
       ? [
+          await import("@replit/vite-plugin-runtime-error-modal").then((m) => 
+            m.default ? m.default() : (m as any)()
+          ),
           await import("@replit/vite-plugin-cartographer").then((m) =>
             m.cartographer({
               root: path.resolve(import.meta.dirname, ".."),
@@ -56,12 +39,13 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname),
   build: {
+    // Vercel handles its own output directory matching, but this keeps it clean
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
   },
   server: {
     port,
-    strictPort: true,
+    strictPort: false, // Changed to false so Vercel can navigate ports freely
     host: "0.0.0.0",
     allowedHosts: true,
     fs: {
