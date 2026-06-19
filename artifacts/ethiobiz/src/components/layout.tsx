@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { useGetMe } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { MapPin, Globe, LogOut } from "lucide-react";
+import { MapPin, Globe, LogOut, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabaseClient } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
@@ -33,9 +33,49 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2 md:gap-4">
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground mr-4">
-              <Link href="/businesses" className="hover:text-foreground transition-colors">
-                {t('businesses')}
+              <Link href="/" className="hover:text-foreground transition-colors">
+                Home
               </Link>
+              <Link href="/categories/real-estate" className="hover:text-foreground transition-colors">
+                Real Estate
+              </Link>
+              <Link href="/categories/house-rentals" className="hover:text-foreground transition-colors">
+                House Rentals
+              </Link>
+              <Link href="/categories/jobs" className="hover:text-foreground transition-colors">
+                Jobs
+              </Link>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1 hover:text-foreground transition-colors outline-none cursor-pointer">
+                  Categories
+                  <ChevronDown className="w-4 h-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/businesses" className="w-full cursor-pointer">All Businesses</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/categories/restaurants" className="w-full cursor-pointer">Restaurants</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/categories/technology" className="w-full cursor-pointer">Technology</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/categories/services" className="w-full cursor-pointer">Services</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/categories/retail" className="w-full cursor-pointer">Retail</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/categories/health" className="w-full cursor-pointer">Health</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/categories/education" className="w-full cursor-pointer">Education</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Link href="/add-business" className="hover:text-foreground transition-colors">
                 Submit Business
               </Link>
