@@ -43,11 +43,10 @@ export default function Signup() {
 
       if (error) {
         toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
-      } else if (data.session) {
-        toast({ title: "Account created!", description: "Welcome to EthiooBiz." });
-        setLocation("/");
-      } else {
-        toast({ title: "Check your email", description: "Confirm your email to activate your account." });
+      } else if (data.user) {
+        toast({ title: "Account created!", description: "Check your email to verify your account." });
+        // Redirect to email verification page
+        setLocation("/verify-email");
       }
     } catch {
       toast({ title: "An error occurred", variant: "destructive" });

@@ -12,11 +12,15 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
+import VerifyEmail from "@/pages/verify-email";
 import Businesses from "@/pages/businesses";
 import BusinessDetail from "@/pages/business-detail";
 import SearchPage from "@/pages/search";
 import AdminDashboard from "@/pages/admin/index";
+import AdminLogin from "@/pages/admin/login";
 import AdminBusinesses from "@/pages/admin/businesses";
+import ManageAdmins from "@/pages/admin/manage-admins";
+import AdminVerifyEmail from "@/pages/admin/verify-email";
 import AddBusiness from "@/pages/add-business";
 
 const queryClient = new QueryClient();
@@ -30,11 +34,15 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route path="/verify-email" component={VerifyEmail} />
         <Route path="/businesses" component={Businesses} />
         <Route path="/businesses/:id" component={BusinessDetail} />
         <Route path="/search" component={SearchPage} />
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin/verify-email" component={AdminVerifyEmail} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/businesses" component={AdminBusinesses} />
+        <Route path="/admin/manage-admins" component={ManageAdmins} />
         <Route path="/add-business" component={AddBusiness} />
         <Route component={NotFound} />
       </Switch>

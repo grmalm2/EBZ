@@ -1,9 +1,17 @@
-import { Link } from "wouter";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
 import { useGetDashboardStats, useGetMe } from "@workspace/api-client-react";
-import { Building2, CheckCircle2, Users, Megaphone, TrendingUp, ArrowRight, Shield } from "lucide-react";
+import { Building2, CheckCircle2, Users, Megaphone, TrendingUp, ArrowRight, Shield, LogOut, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+
+interface Admin {
+  id: string;
+  email: string;
+  role: string;
+}
 
 function StatCard({ title, value, icon: Icon, color }: { title: string; value: string | number; icon: any; color: string }) {
   return (
@@ -24,17 +32,43 @@ function StatCard({ title, value, icon: Icon, color }: { title: string; value: s
 }
 
 export default function AdminDashboard() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const [adminUser, setAdminUser] = useState<Admin | null>(null);
   const { data: user } = useGetMe();
   const { data: stats, isLoading } = useGetDashboardStats();
 
-  if (!user) {
+  useEffect(() => {
+    // Check if admin is logged in
+    const adminToken = localStorage.getItem("adminToken");
+    const storedAdmin = localStorage.getItem("adminUser");
+
+    if (!adminToken || !storedAdmin) {
+      setLocation("/admin/login");
+      return;
+    }
+
+    try {
+      setAdminUser(JSON.parse(storedAdmin));
+    } catch {
+      setLocation("/admin/login");
+    }
+  }, [setLocation]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUser");
+    setLocation("/admin/login");
+  };
+
+  if (!adminUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Shield className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-30" />
           <h2 className="text-2xl font-bold mb-2">Access Restricted</h2>
           <p className="text-muted-foreground mb-6">Please log in to access the admin dashboard.</p>
-          <Link href="/login"><Button>Login</Button></Link>
+          <Link href="/admin/login"><Button>Admin Login</Button></Link>
         </div>
       </div>
     );
@@ -44,11 +78,32 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <div className="bg-primary/5 border-b py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-serif font-bold">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Manage EthiooBiz listings and activity</p>
+              <p className="text-sm text-muted-foreground">Welcome, {adminUser?.email}</p>
             </div>
+            <div className="flex items-center gap-2">
+              {adminUser?.role === "super_admin" && (
+                <Link href="/admin/manage-admins">
+                  <Button variant="outline" className="gap-2">
+                    <Users className="w-4 h-4" />
+                    Manage Admins
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div></div>
             <Link href="/admin/businesses">
               <Button className="gap-2">
                 <Building2 className="w-4 h-4" />
