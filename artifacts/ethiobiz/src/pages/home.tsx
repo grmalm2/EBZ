@@ -1,7 +1,7 @@
 import { useI18n } from "@/lib/i18n";
 import { useGlobalSearch, useGetFeaturedBusinesses, useGetRecentBusinesses, useGetActiveAds } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
-import { Search, Building2, Briefcase, Car, Globe, Handshake, Heart, Grid3x3, ArrowRight, CheckCircle2, Home as HomeIcon } from "lucide-react";
+import { Search, Building2, Briefcase, Car, Globe, Handshake, Heart, Grid3x3, ArrowRight, CheckCircle2, Home as HomeIcon, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";

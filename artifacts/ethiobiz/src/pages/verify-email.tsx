@@ -67,7 +67,7 @@ export default function VerifyEmailPage() {
         return;
       }
 
-      const { error } = await supabaseClient.auth.resendEntirely({
+      const { error } = await supabaseClient.auth.resend({
         email: userEmail,
         type: "signup",
       });

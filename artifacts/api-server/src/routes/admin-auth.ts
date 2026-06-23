@@ -310,7 +310,7 @@ router.patch("/admin/admins/:id", async (req: Request, res: Response): Promise<v
     return;
   }
 
-  const { id } = req.params;
+  const adminId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const { firstName, lastName, role, active } = req.body;
 
   try {
@@ -334,7 +334,7 @@ router.patch("/admin/admins/:id", async (req: Request, res: Response): Promise<v
     if (role !== undefined) updates.role = role;
     if (active !== undefined) updates.active = active;
 
-    const updated = await db.update(adminsTable).set(updates).where(eq(adminsTable.id, id)).returning();
+    const updated = await db.update(adminsTable).set(updates).where(eq(adminsTable.id, adminId)).returning();
 
     if (updated.length === 0) {
       res.status(404).json({ error: "Admin not found" });
@@ -357,7 +357,7 @@ router.delete("/admin/admins/:id", async (req: Request, res: Response): Promise<
     return;
   }
 
-  const { id } = req.params;
+  const adminId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
   try {
     const user = await getUserFromToken(token);
@@ -375,15 +375,15 @@ router.delete("/admin/admins/:id", async (req: Request, res: Response): Promise<
     }
 
     // Don't allow deleting the last super admin
-    if (id === currentAdmin[0].id) {
+    if (adminId === currentAdmin[0].id) {
       res.status(400).json({ error: "Cannot delete your own admin account" });
       return;
     }
 
-    await db.delete(adminsTable).where(eq(adminsTable.id, id));
+    await db.delete(adminsTable).where(eq(adminsTable.id, adminId));
 
     // Also delete from Supabase Auth
-    await supabaseAdmin.auth.admin.deleteUser(id);
+    await supabaseAdmin.auth.admin.deleteUser(adminId);
 
     res.json({ message: "Admin deleted" });
   } catch (error) {
