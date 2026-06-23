@@ -4,7 +4,6 @@
   "outputDirectory": "artifacts/ethiobiz/dist",
   "installCommand": "pnpm install",
   "framework": "vite",
-  "public": true,
   "cleanUrls": true,
   "trailingSlash": false,
   "env": {
@@ -17,5 +16,4 @@
       "destination": "/artifacts/ethiobiz/dist/index.html"
     }
   ]
-}
-
+}+
