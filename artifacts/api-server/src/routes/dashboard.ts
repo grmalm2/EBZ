@@ -2,8 +2,12 @@ import { Router, type IRouter } from "express";
 import { db, businessesTable, adsTable, claimsTable, categoriesTable } from "@workspace/db";
 import { supabaseAdmin } from "@workspace/db/supabase";
 import { eq, count, desc, inArray } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/admin-auth";
 
 const router: IRouter = Router();
+
+// Apply admin auth middleware to all dashboard routes
+router.use("/dashboard", requireAdmin);
 
 router.get("/dashboard/stats", async (_req, res): Promise<void> => {
   const [{ total: totalBusinesses }] = await db.select({ total: count() }).from(businessesTable);

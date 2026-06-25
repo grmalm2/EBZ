@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, adsTable } from "@workspace/db";
-import { eq, and, lte, gte, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/admin-auth";
 
 const router: IRouter = Router();
 
@@ -19,8 +20,8 @@ function formatAd(ad: any) {
   };
 }
 
+// Public routes
 router.get("/ads/active", async (_req, res): Promise<void> => {
-  const now = new Date();
   const ads = await db
     .select()
     .from(adsTable)
@@ -33,6 +34,9 @@ router.get("/ads/active", async (_req, res): Promise<void> => {
     .limit(10);
   res.json(ads.map(formatAd));
 });
+
+// Admin routes
+router.use("/ads", requireAdmin);
 
 router.get("/ads", async (_req, res): Promise<void> => {
   const ads = await db.select().from(adsTable).orderBy(adsTable.createdAt);

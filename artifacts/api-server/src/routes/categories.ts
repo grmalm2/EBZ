@@ -1,9 +1,11 @@
 import { Router, type IRouter } from "express";
 import { db, categoriesTable, businessesTable } from "@workspace/db";
-import { eq, count, isNull, sql } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/admin-auth";
 
 const router: IRouter = Router();
 
+// Public read
 router.get("/categories", async (req, res): Promise<void> => {
   const allCats = await db.select().from(categoriesTable).orderBy(categoriesTable.nameEn);
 
@@ -47,19 +49,6 @@ router.get("/categories", async (req, res): Promise<void> => {
   res.json(result);
 });
 
-router.post("/categories", async (req, res): Promise<void> => {
-  const { slug, nameEn, nameAm, nameOrm, icon, parentId } = req.body;
-  if (!slug || !nameEn || !nameAm || !nameOrm) {
-    res.status(400).json({ error: "slug, nameEn, nameAm, nameOrm are required" });
-    return;
-  }
-  const [cat] = await db
-    .insert(categoriesTable)
-    .values({ slug, nameEn, nameAm, nameOrm, icon, parentId })
-    .returning();
-  res.status(201).json({ ...cat, businessCount: 0, children: [] });
-});
-
 router.get("/categories/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
@@ -74,7 +63,21 @@ router.get("/categories/:id", async (req, res): Promise<void> => {
   res.json({ ...cat, businessCount: Number(bCount?.count ?? 0), children: children.map(c => ({ ...c, businessCount: 0, children: [] })) });
 });
 
-router.patch("/categories/:id", async (req, res): Promise<void> => {
+// Protected admin mutations
+router.post("/categories", requireAdmin, async (req, res): Promise<void> => {
+  const { slug, nameEn, nameAm, nameOrm, icon, parentId } = req.body;
+  if (!slug || !nameEn || !nameAm || !nameOrm) {
+    res.status(400).json({ error: "slug, nameEn, nameAm, nameOrm are required" });
+    return;
+  }
+  const [cat] = await db
+    .insert(categoriesTable)
+    .values({ slug, nameEn, nameAm, nameOrm, icon, parentId })
+    .returning();
+  res.status(201).json({ ...cat, businessCount: 0, children: [] });
+});
+
+router.patch("/categories/:id", requireAdmin, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -92,7 +95,7 @@ router.patch("/categories/:id", async (req, res): Promise<void> => {
   res.json({ ...cat, businessCount: 0, children: [] });
 });
 
-router.delete("/categories/:id", async (req, res): Promise<void> => {
+router.delete("/categories/:id", requireAdmin, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
