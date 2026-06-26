@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { supabaseAdmin } from "@workspace/db/supabase";
+import { requireAdmin, requireSuperAdmin } from "../middlewares/admin-auth";
 
 const router: IRouter = Router();
 
@@ -14,6 +15,9 @@ function formatUser(u: any) {
   };
 }
 
+// All user routes require admin authentication
+router.use("/users", requireAdmin);
+
 router.get("/users", async (_req, res): Promise<void> => {
   const { data, error } = await supabaseAdmin.auth.admin.listUsers();
   if (error) {
@@ -23,7 +27,7 @@ router.get("/users", async (_req, res): Promise<void> => {
   res.json((data.users || []).map(formatUser));
 });
 
-router.patch("/users/:id", async (req, res): Promise<void> => {
+router.patch("/users/:id", requireSuperAdmin, async (req, res): Promise<void> => {
   const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const { role, suspended } = req.body;
 

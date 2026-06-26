@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, businessesTable, categoriesTable, claimsTable } from "@workspace/db";
 import { eq, and, ilike, sql, desc, count, inArray } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/admin-auth";
 
 const router: IRouter = Router();
 
@@ -39,6 +40,7 @@ function formatBusiness(b: any, cat?: any) {
   };
 }
 
+// Public routes
 router.get("/businesses/featured", async (_req, res): Promise<void> => {
   const businesses = await db
     .select()
@@ -191,7 +193,8 @@ router.get("/businesses/:id", async (req, res): Promise<void> => {
   res.json(formatBusiness(b, cat));
 });
 
-router.patch("/businesses/:id", async (req, res): Promise<void> => {
+// Protected admin routes
+router.patch("/businesses/:id", requireAdmin, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -204,7 +207,7 @@ router.patch("/businesses/:id", async (req, res): Promise<void> => {
   res.json(formatBusiness(b, cat));
 });
 
-router.delete("/businesses/:id", async (req, res): Promise<void> => {
+router.delete("/businesses/:id", requireAdmin, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -213,7 +216,7 @@ router.delete("/businesses/:id", async (req, res): Promise<void> => {
   res.sendStatus(204);
 });
 
-router.post("/businesses/:id/verify", async (req, res): Promise<void> => {
+router.post("/businesses/:id/verify", requireAdmin, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
