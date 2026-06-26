@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "pnpm run build",
-  "outputDirectory": "artifacts/ethiobiz/dist",
+  "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": "vite",
   "cleanUrls": true,
@@ -13,7 +13,7 @@
   "rewrites": [
     {
       "source": "/((?!assets/|.*\\.).*)",
-      "destination": "/artifacts/ethiobiz/dist/index.html"
+      "destination": "/index.html"
     }
   ]
-}+
+}
