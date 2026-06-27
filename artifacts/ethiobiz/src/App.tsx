@@ -46,39 +46,35 @@ function ScrollToTop() {
 
 function PublicRouter() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <Route path="/verify-email" component={VerifyEmail} />
-        <Route path="/businesses" component={Businesses} />
-        <Route path="/businesses/:id" component={BusinessDetail} />
-        <Route path="/search" component={SearchPage} />
-        <Route path="/add-business" component={AddBusiness} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
+      <Route path="/verify-email" component={VerifyEmail} />
+      <Route path="/businesses" component={Businesses} />
+      <Route path="/business/:id" component={BusinessDetail} />
+      <Route path="/search" component={SearchPage} />
+      <Route path="/add-business" component={AddBusiness} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
 function AdminRouter() {
   return (
-    <AdminAuthProvider>
-      <Switch>
-        <Route path="/admin/login" component={AdminLogin} />
-        <Route path="/admin/verify-email" component={AdminVerifyEmail} />
-        <Route path="/admin" component={AdminDashboard} />
-        <Route path="/admin/businesses" component={AdminBusinesses} />
-        <Route path="/admin/users" component={AdminUsers} />
-        <Route path="/admin/categories" component={AdminCategories} />
-        <Route path="/admin/ads" component={AdminAds} />
-        <Route path="/admin/analytics" component={AdminAnalytics} />
-        <Route path="/admin/manage-admins" component={ManageAdmins} />
-        <Route path="/admin/settings" component={AdminSettings} />
-        <Route component={NotFound} />
-      </Switch>
-    </AdminAuthProvider>
+    <Switch>
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/verify-email" component={AdminVerifyEmail} />
+      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/businesses" component={AdminBusinesses} />
+      <Route path="/admin/users" component={AdminUsers} />
+      <Route path="/admin/categories" component={AdminCategories} />
+      <Route path="/admin/ads" component={AdminAds} />
+      <Route path="/admin/analytics" component={AdminAnalytics} />
+      <Route path="/admin/manage-admins" component={ManageAdmins} />
+      <Route path="/admin/settings" component={AdminSettings} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
@@ -86,32 +82,35 @@ function Router() {
   return (
     <>
       <ScrollToTop />
-      <Switch>
-        {/* Admin routes - must come first to avoid /admin matching the NotFound in PublicRouter */}
-        <Route path="/admin/*">
+      {/* Admin routes - must come first to avoid /admin matching the NotFound in PublicRouter */}
+      <Route path="/admin/*">
+        <AdminAuthProvider>
           <AdminRouter />
-        </Route>
-        {/* Public routes */}
-        <Route path="/*">
+        </AdminAuthProvider>
+      </Route>
+      
+      {/* Public routes */}
+      <Route path="/*">
+        <Layout>
           <PublicRouter />
-        </Route>
-      </Switch>
+        </Layout>
+      </Route>
     </>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <I18nProvider>
+    <WouterRouter>
+      <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL?.replace(/\/$/, "") || ""}>
+          <I18nProvider>
+            <Toaster />
             <Router />
-          </WouterRouter>
-          <Toaster />
+          </I18nProvider>
         </TooltipProvider>
-      </I18nProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </WouterRouter>
   );
 }
 
