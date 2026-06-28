@@ -1,4 +1,4 @@
-{
+ {
   "version": 2,
   "buildCommand": "cd artifacts/ethiobiz && pnpm run build",
   "outputDirectory": "artifacts/ethiobiz/dist",
