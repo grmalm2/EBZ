@@ -82,14 +82,11 @@ function Router() {
   return (
     <>
       <ScrollToTop />
-      {/* Admin routes - must come first to avoid /admin matching the NotFound in PublicRouter */}
       <Route path="/admin/*">
         <AdminAuthProvider>
           <AdminRouter />
         </AdminAuthProvider>
       </Route>
-      
-      {/* Public routes */}
       <Route path="/*">
         <Layout>
           <PublicRouter />
